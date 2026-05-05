@@ -8,17 +8,20 @@ import {
   ScrollView 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
 import { useLogger } from '../../context/LogContext';
 import { useEffect } from 'react';
 
+type BillingScreenRouteProp = RouteProp<MainStackParamList, 'Billing'>;
 type BillingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Billing'>;
 
 const BillingScreen = () => {
+  const route = useRoute<BillingScreenRouteProp>();
   const navigation = useNavigation<BillingScreenNavigationProp>();
+  const { hotelId } = route.params || { hotelId: '1' };
   const { cart, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('UPI');
   const { logAction } = useLogger();
@@ -43,10 +46,10 @@ const BillingScreen = () => {
 
     Alert.alert('Order Placed!', 'Your delicious meal is on the way.', [
       {
-        text: 'Track Order',
+        text: 'Rate your Experience',
         onPress: () => {
           clearCart();
-          navigation.navigate('Home');
+          navigation.navigate('Rating', { hotelId });
         },
       },
     ]);

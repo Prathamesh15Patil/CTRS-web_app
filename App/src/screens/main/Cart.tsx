@@ -8,17 +8,20 @@ import {
   SafeAreaView, 
   ScrollView 
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
 import { useLogger } from '../../context/LogContext';
 import { useEffect } from 'react';
 
+type CartScreenRouteProp = RouteProp<MainStackParamList, 'Cart'>;
 type CartScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Cart'>;
 
 const CartScreen = () => {
+  const route = useRoute<CartScreenRouteProp>();
   const navigation = useNavigation<CartScreenNavigationProp>();
+  const { hotelId } = route.params || { hotelId: '1' }; // Fallback for safety
   const { cart, updateQuantity } = useCart();
   const { logAction } = useLogger();
 
@@ -147,7 +150,7 @@ const CartScreen = () => {
           style={styles.checkoutButton}
           onPress={() => {
             logAction('tapped "Proceed to Checkout"');
-            navigation.navigate('Billing');
+            navigation.navigate('Billing', { hotelId });
           }}
         >
           <Text style={styles.checkoutButtonText}>Proceed to Pay</Text>

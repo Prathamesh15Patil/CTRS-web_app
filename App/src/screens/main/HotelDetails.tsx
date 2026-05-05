@@ -153,7 +153,7 @@ const HotelDetailsScreen = () => {
       {cart.total > 0 && (
         <TouchableOpacity
           style={styles.floatingCart}
-          onPress={() => navigation.navigate('Cart')}
+          onPress={() => navigation.navigate('Cart', { hotelId })}
         >
           <View>
             <Text style={styles.cartItemsCount}>{cart.items.length} ITEM{cart.total > 1 ? 'S' : ''}</Text>

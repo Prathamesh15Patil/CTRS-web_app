@@ -12,8 +12,9 @@ export type AuthStackParamList = {
 export type MainStackParamList = {
   Home: undefined;
   HotelDetails: { hotelId: string };
-  Cart: undefined;
-  Billing: undefined;
+  Cart: { hotelId: string };
+  Billing: { hotelId: string };
+  Rating: { hotelId: string };
 };
 
 export interface User {

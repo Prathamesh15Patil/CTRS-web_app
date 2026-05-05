@@ -17,6 +17,7 @@ import HomeScreen from '../screens/main/Home';
 import HotelDetailsScreen from '../screens/main/HotelDetails';
 import CartScreen from '../screens/main/Cart';
 import BillingScreen from '../screens/main/Billing';
+import RatingScreen from '../screens/main/Rating';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -33,6 +34,7 @@ const MainNavigator = () => (
     <MainStack.Screen name="HotelDetails" component={HotelDetailsScreen} />
     <MainStack.Screen name="Cart" component={CartScreen} />
     <MainStack.Screen name="Billing" component={BillingScreen} />
+    <MainStack.Screen name="Rating" component={RatingScreen} />
   </MainStack.Navigator>
 );
 
