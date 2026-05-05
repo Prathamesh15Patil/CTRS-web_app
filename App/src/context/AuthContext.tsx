@@ -6,6 +6,7 @@ import { loginUser, decodeJWT } from '../services/apiService';
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -27,7 +28,9 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
@@ -37,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.access_token) {
         const decoded = decodeJWT(response.access_token);
         console.log('Decoded token:', decoded);
-        
+
         if (decoded) {
           const username = decoded.username || decoded.name || decoded.sub || email;
           console.log('Extracted username:', username);
@@ -47,6 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             name: username,
           };
           setUser(loggedInUser);
+          setToken(response.access_token);
           setIsLoading(false);
           return true;
         }
@@ -63,10 +67,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

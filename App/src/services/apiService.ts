@@ -46,10 +46,28 @@ export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> =
   return apiRequest<LoginResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({
-        email: payload.email,
-        password: payload.password,
+      email: payload.email,
+      password: payload.password,
     })
   });
+};
+
+export const sendLogToBackend = async (payload: { log: string; session_id: string; timestamp: string }, token?: string | null): Promise<void> => {
+  try {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Assuming /logs is the endpoint, adjust if necessary
+    await apiRequest('/addLog', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+  } catch (error) {
+    console.error('Failed to send log:', error);
+  }
 };
 
 export const getBackendBaseUrl = (): string => BASE_URL;

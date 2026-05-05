@@ -12,6 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
+import { useLogger } from '../../context/LogContext';
+import { useEffect } from 'react';
 
 type BillingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Billing'>;
 
@@ -19,6 +21,14 @@ const BillingScreen = () => {
   const navigation = useNavigation<BillingScreenNavigationProp>();
   const { cart, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('UPI');
+  const { logAction } = useLogger();
+
+  useEffect(() => {
+    logAction('Address selection screen displayed');
+    logAction('Selected address: Home, Belagavi');
+    logAction('Delivery time displayed: 35 mins');
+    logAction('Payment options displayed (UPI, Card, Cash)');
+  }, []);
 
   const itemTotal = cart.total;
   const deliveryCharge = 40;
@@ -26,6 +36,11 @@ const BillingScreen = () => {
   const grandTotal = itemTotal + deliveryCharge + platformFee;
 
   const handlePlaceOrder = () => {
+    logAction(`Payment successful via ${paymentMethod}`);
+    logAction('Order placed successfully');
+    logAction(`Order ID generated: ZMT${Math.floor(Math.random() * 100000000)}`);
+    logAction('Order status: Preparing food');
+
     Alert.alert('Order Placed!', 'Your delicious meal is on the way.', [
       {
         text: 'Track Order',
@@ -58,7 +73,10 @@ const BillingScreen = () => {
           
           <TouchableOpacity 
             style={[styles.paymentOption, paymentMethod === 'UPI' && styles.selectedOption]} 
-            onPress={() => setPaymentMethod('UPI')}
+            onPress={() => {
+              logAction('selected UPI payment');
+              setPaymentMethod('UPI');
+            }}
           >
             <View style={styles.paymentInfo}>
               <Text style={styles.paymentIcon}>📱</Text>
@@ -69,7 +87,10 @@ const BillingScreen = () => {
 
           <TouchableOpacity 
             style={[styles.paymentOption, paymentMethod === 'COD' && styles.selectedOption]} 
-            onPress={() => setPaymentMethod('COD')}
+            onPress={() => {
+              logAction('selected Cash payment');
+              setPaymentMethod('COD');
+            }}
           >
             <View style={styles.paymentInfo}>
               <Text style={styles.paymentIcon}>💵</Text>

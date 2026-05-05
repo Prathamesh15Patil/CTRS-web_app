@@ -12,6 +12,8 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList, FoodItem } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
+import { useLogger } from '../../context/LogContext';
+import { useEffect } from 'react';
 
 type HotelDetailsRouteProp = RouteProp<MainStackParamList, 'HotelDetails'>;
 type HotelDetailsNavigationProp = StackNavigationProp<MainStackParamList, 'HotelDetails'>;
@@ -85,6 +87,13 @@ const HotelDetailsScreen = () => {
   const navigation = useNavigation<HotelDetailsNavigationProp>();
   const { hotelId } = route.params;
   const { addToCart, cart } = useCart(); // Assuming cart is available in context
+  const { logAction } = useLogger();
+
+  useEffect(() => {
+    logAction('Restaurant page opened');
+    logAction('Restaurant details displayed:\n                     - Rating: 4.3\n                     - Delivery Time: 30–35 mins\n                     - Cost for two: ₹400');
+    logAction('Menu categories displayed (Recommended, Biryani, Starters, Beverages)');
+  }, []);
 
   // Filter menu based on hotelId
   const menuItems = useMemo(() => ALL_MENUS[hotelId] || [], [hotelId]);
@@ -106,7 +115,10 @@ const HotelDetailsScreen = () => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.addButton}
-          onPress={() => addToCart(item)}
+          onPress={() => {
+            logAction(`added "${item.name}" to cart`);
+            addToCart(item);
+          }}
         >
           <Text style={styles.addButtonText}>ADD</Text>
           <Text style={styles.plusIcon}>+</Text>
@@ -118,7 +130,10 @@ const HotelDetailsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => {
+          logAction('navigated back to menu');
+          navigation.goBack();
+        }}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Menu</Text>

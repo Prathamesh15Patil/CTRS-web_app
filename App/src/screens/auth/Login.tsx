@@ -1,17 +1,26 @@
 // src/screens/auth/Login.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useLogger } from '../../context/LogContext';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
+  const { logAction } = useLogger();
+
+  useEffect(() => {
+    logAction('opened the Zomato app');
+    logAction('Login screen displayed with options (Google, Phone Number)');
+  }, []);
 
   const handleLogin = async () => {
     const success = await login(email, password);
-    if (!success) {
+    if (success) {
+      logAction('logged in using Phone Number OTP authentication');
+    } else {
       Alert.alert('Error', 'Invalid credentials');
     }
   };

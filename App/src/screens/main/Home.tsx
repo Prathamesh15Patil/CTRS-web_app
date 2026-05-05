@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,12 +6,15 @@ import {
   TouchableOpacity, 
   Image, 
   StyleSheet, 
-  TextInput 
+  TextInput,
+  BackHandler,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList, Hotel } from '../../navigation/types';
+import { useLogger } from '../../context/LogContext';
 
 type HomeScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Home'>;
 
@@ -26,7 +29,36 @@ const mockHotels: Hotel[] = [
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
+  const { logAction } = useLogger();
+  const [hasLoggedScroll, setHasLoggedScroll] = useState(false);
   
+  useEffect(() => {
+    logAction('Home screen loaded with location set to Belagavi');
+    logAction('App displayed restaurant feed with categories (Dining, Delivery, Nightlife)');
+    logAction('Promotional banners displayed:\n                     - Flat ₹125 OFF above ₹249 (Code: SAVE125)\n                     - Free Delivery on selected restaurants');
+
+    const backAction = () => {
+      Alert.alert('Want to Exit app?', 'Are you sure you want to exit?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'Quit',
+          onPress: () => {
+            logAction('exited the application');
+            setTimeout(() => BackHandler.exitApp(), 100);
+          },
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
+  }, []);
+
   // Search Logic
   const filteredHotels = mockHotels.filter((hotel) => 
     hotel.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -36,7 +68,10 @@ const HomeScreen = () => {
     <TouchableOpacity
       activeOpacity={0.9}
       style={styles.hotelCard}
-      onPress={() => navigation.navigate('HotelDetails', { hotelId: item.id })}
+      onPress={() => {
+        logAction(`selected ${item.name}, Belagavi`);
+        navigation.navigate('HotelDetails', { hotelId: item.id });
+      }}
     >
       <View style={styles.imageContainer}>
         <Image source={{ uri: item.image }} style={styles.hotelImage} />
@@ -89,9 +124,22 @@ const HomeScreen = () => {
             placeholder="Restaurant name or a dish..." 
             style={styles.searchInput}
             value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)}
+            onFocus={() => logAction('tapped on search bar')}
+            onChangeText={(text) => {
+              setSearchQuery(text);
+              if (text.length > 0) {
+                logAction(`Search query entered: "${text}"`);
+                logAction(`Search results displayed with restaurants serving ${text}`);
+              }
+            }}
           />
-          <View style={styles.verticalDivider} />
+          <TouchableOpacity onPress={() => {
+            logAction('Filters opened');
+            logAction('Filter applied: Rating 4.0+');
+            logAction('Filtered restaurant list displayed');
+          }}>
+            <View style={styles.verticalDivider} />
+          </TouchableOpacity>
           <Text style={styles.micIcon}>🎙️</Text>
         </View>
       </View>
@@ -101,6 +149,12 @@ const HomeScreen = () => {
         data={filteredHotels}
         renderItem={renderHotel}
         keyExtractor={(item) => item.id}
+        onScrollBeginDrag={() => {
+          if (!hasLoggedScroll) {
+            logAction('scrolled through restaurant list');
+            setHasLoggedScroll(true);
+          }
+        }}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={

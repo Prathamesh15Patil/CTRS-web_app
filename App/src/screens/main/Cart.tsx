@@ -12,12 +12,22 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
+import { useLogger } from '../../context/LogContext';
+import { useEffect } from 'react';
 
 type CartScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Cart'>;
 
 const CartScreen = () => {
   const navigation = useNavigation<CartScreenNavigationProp>();
   const { cart, updateQuantity } = useCart();
+  const { logAction } = useLogger();
+
+  useEffect(() => {
+    logAction('opened cart');
+    if (cart.items.length > 0) {
+      logAction('Offer section displayed in cart:\n                     - SAVE125 applicable above ₹249');
+    }
+  }, []);
 
   // Helper for delivery fee & taxes
   const deliveryFee = 40;
@@ -38,7 +48,10 @@ const CartScreen = () => {
         <View style={styles.quantityContainer}>
           <TouchableOpacity
             style={styles.quantityBtn}
-            onPress={() => updateQuantity(item.foodItem.id, item.quantity - 1)}
+            onPress={() => {
+              logAction(`decreased quantity of ${item.foodItem.name}`);
+              updateQuantity(item.foodItem.id, item.quantity - 1);
+            }}
           >
             <Text style={styles.quantityBtnText}>–</Text>
           </TouchableOpacity>
@@ -47,7 +60,10 @@ const CartScreen = () => {
           
           <TouchableOpacity
             style={styles.quantityBtn}
-            onPress={() => updateQuantity(item.foodItem.id, item.quantity + 1)}
+            onPress={() => {
+              logAction(`increased quantity of ${item.foodItem.name}`);
+              updateQuantity(item.foodItem.id, item.quantity + 1);
+            }}
           >
             <Text style={styles.quantityBtnText}>+</Text>
           </TouchableOpacity>
@@ -129,7 +145,10 @@ const CartScreen = () => {
         </View>
         <TouchableOpacity
           style={styles.checkoutButton}
-          onPress={() => navigation.navigate('Billing')}
+          onPress={() => {
+            logAction('tapped "Proceed to Checkout"');
+            navigation.navigate('Billing');
+          }}
         >
           <Text style={styles.checkoutButtonText}>Proceed to Pay</Text>
         </TouchableOpacity>

@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
+import { LogProvider } from '../context/LogContext';
 import { RootStackParamList, AuthStackParamList, MainStackParamList } from './types';
 
 // Auth Screens
@@ -55,8 +56,10 @@ const AppNavigator = () => {
 
 export default () => (
   <AuthProvider>
-    <CartProvider>
-      <AppNavigator />
-    </CartProvider>
+    <LogProvider>
+      <CartProvider>
+        <AppNavigator />
+      </CartProvider>
+    </LogProvider>
   </AuthProvider>
 );
