@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  FlatList, 
-  TouchableOpacity, 
-  Image, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
   TextInput,
   BackHandler,
   Alert
@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList, Hotel } from '../../navigation/types';
 import { useLogger } from '../../context/LogContext';
+import { useRef } from 'react';
 
 type HomeScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Home'>;
 
@@ -30,8 +31,42 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
   const { logAction } = useLogger();
-  const [hasLoggedScroll, setHasLoggedScroll] = useState(false);
-  
+
+  // Define a threshold for "High Velocity"
+  const lastOffset = useRef(0);
+  const lastTimestamp = useRef(Date.now());
+  const FAST_SCROLL_THRESHOLD = 2; // Adjust this based on testing
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  const handleScrollEnd = () => {
+    setIsScrolling(false);
+  };
+
+  const handleScroll = (event: any) => {
+    const currentOffset = event.nativeEvent.contentOffset.y;
+    const currentTimestamp = Date.now();
+
+    const distance = Math.abs(currentOffset - lastOffset.current);
+    const timeDelta = currentTimestamp - lastTimestamp.current;
+
+    if (timeDelta > 0) {
+      const velocity = distance / timeDelta;
+
+      if (velocity > FAST_SCROLL_THRESHOLD && !isScrolling) {
+        // Trigger logic here (e.g., hide a Floating Action Button)
+        logAction('scrolled fast through restaurant list');
+        setIsScrolling(true);
+      } else if (!isScrolling) {
+        setIsScrolling(true);
+        logAction('scrolled normally through restaurant list');
+      }
+    }
+
+    // Update refs for the next frame
+    lastOffset.current = currentOffset;
+    lastTimestamp.current = currentTimestamp;
+  };
+
   useEffect(() => {
     logAction('Home screen loaded with location set to Belagavi');
     logAction('App displayed restaurant feed with categories (Dining, Delivery, Nightlife)');
@@ -60,7 +95,7 @@ const HomeScreen = () => {
   }, []);
 
   // Search Logic
-  const filteredHotels = mockHotels.filter((hotel) => 
+  const filteredHotels = mockHotels.filter((hotel) =>
     hotel.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -70,7 +105,7 @@ const HomeScreen = () => {
       style={styles.hotelCard}
       onPress={() => {
         logAction(`selected ${item.name}, Belagavi`);
-        navigation.navigate('HotelDetails', { hotelId: item.id });
+        navigation.navigate('HotelDetails', { hotelId: item.id, hotelName: item.name, rating: item.rating, deliveryTime: item.deliveryTime, discount: item.discount });
       }}
     >
       <View style={styles.imageContainer}>
@@ -79,7 +114,7 @@ const HomeScreen = () => {
           <Text style={styles.discountText}>{item.discount}</Text>
         </View>
       </View>
-      
+
       <View style={styles.hotelInfo}>
         <View style={styles.row}>
           <Text style={styles.hotelName}>{item.name}</Text>
@@ -87,7 +122,7 @@ const HomeScreen = () => {
             <Text style={styles.ratingText}>{item.rating} ★</Text>
           </View>
         </View>
-        
+
         <View style={styles.row}>
           <Text style={styles.subText}>North Indian • Fast Food • ₹200 for one</Text>
           <Text style={styles.subText}>{item.deliveryTime}</Text>
@@ -120,8 +155,8 @@ const HomeScreen = () => {
 
         <View style={styles.searchWrapper}>
           <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput 
-            placeholder="Restaurant name or a dish..." 
+          <TextInput
+            placeholder="Restaurant name or a dish..."
             style={styles.searchInput}
             value={searchQuery}
             onFocus={() => logAction('tapped on search bar')}
@@ -149,11 +184,14 @@ const HomeScreen = () => {
         data={filteredHotels}
         renderItem={renderHotel}
         keyExtractor={(item) => item.id}
-        onScrollBeginDrag={() => {
-          if (!hasLoggedScroll) {
-            logAction('scrolled through restaurant list');
-            setHasLoggedScroll(true);
-          }
+        onScroll={handleScroll}
+        // scrollEventThrottle limits how often the scroll event fires (16ms is ~60fps)
+        scrollEventThrottle={16}
+        onScrollEndDrag={(e: any) => {
+          // If velocity is 0, there is no momentum, so it stopped here.
+
+          handleScrollEnd();
+
         }}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}

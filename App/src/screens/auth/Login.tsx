@@ -13,7 +13,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     logAction('opened the Zomato app');
-    logAction('Login screen displayed with options (Google, Phone Number)');
+    logAction('Login screen displayed with options (Email id, Password)');
   }, []);
 
   const handleLogin = async () => {

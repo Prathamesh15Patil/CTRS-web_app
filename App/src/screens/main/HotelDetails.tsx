@@ -14,6 +14,7 @@ import { MainStackParamList, FoodItem } from '../../navigation/types';
 import { useCart } from '../../context/CartContext';
 import { useLogger } from '../../context/LogContext';
 import { useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 type HotelDetailsRouteProp = RouteProp<MainStackParamList, 'HotelDetails'>;
 type HotelDetailsNavigationProp = StackNavigationProp<MainStackParamList, 'HotelDetails'>;
@@ -85,13 +86,47 @@ const ALL_MENUS: Record<string, FoodItem[]> = {
 const HotelDetailsScreen = () => {
   const route = useRoute<HotelDetailsRouteProp>();
   const navigation = useNavigation<HotelDetailsNavigationProp>();
-  const { hotelId } = route.params;
+  const { hotelId, hotelName, rating, deliveryTime, discount } = route.params;
   const { addToCart, cart } = useCart(); // Assuming cart is available in context
   const { logAction } = useLogger();
 
+  const lastOffset = useRef(0);
+    const lastTimestamp = useRef(Date.now());
+    const FAST_SCROLL_THRESHOLD = 2; // Adjust this based on testing
+    const [isScrolling, setIsScrolling] = useState(false);
+  
+    const handleScrollEnd = () => {
+      setIsScrolling(false);
+    };
+  
+    const handleScroll = (event: any) => {
+      const currentOffset = event.nativeEvent.contentOffset.y;
+      const currentTimestamp = Date.now();
+  
+      const distance = Math.abs(currentOffset - lastOffset.current);
+      const timeDelta = currentTimestamp - lastTimestamp.current;
+  
+      if (timeDelta > 0) {
+        const velocity = distance / timeDelta;
+  
+        if (velocity > FAST_SCROLL_THRESHOLD && !isScrolling) {
+          // Trigger logic here (e.g., hide a Floating Action Button)
+          logAction(`scrolled fast through menu of ${hotelName} `);
+          setIsScrolling(true);
+        } else if (!isScrolling) {
+          setIsScrolling(true);
+          logAction(`scrolled normally through menu of ${hotelName} `);
+        }
+      }
+  
+      // Update refs for the next frame
+      lastOffset.current = currentOffset;
+      lastTimestamp.current = currentTimestamp;
+    };
+
   useEffect(() => {
     logAction('Restaurant page opened');
-    logAction('Restaurant details displayed:\n                     - Rating: 4.3\n                     - Delivery Time: 30–35 mins\n                     - Cost for two: ₹400');
+    logAction(`Restaurant details displayed:\n - Restaurant name: ${hotelName}\n - Rating: ${rating}\n - Delivery Time: ${deliveryTime}\n - Cost for two: ₹400`);
     
     const topDishes = (ALL_MENUS[hotelId] || []).slice(0, 3).map(item => item.name).join(', ');
     logAction(`Menu items displayed (${topDishes})`);
@@ -99,6 +134,24 @@ const HotelDetailsScreen = () => {
 
   // Filter menu based on hotelId
   const menuItems = useMemo(() => ALL_MENUS[hotelId] || [], [hotelId]);
+
+  const RestaurantHeader = () => (
+    <View style={styles.restaurantHeaderContainer}>
+      <Text style={styles.mainTitle}>{hotelName}</Text>
+      <View style={styles.infoRow}>
+        <View style={styles.ratingBox}>
+          <Text style={styles.ratingValue}>{rating} ★</Text>
+        </View>
+        <Text style={styles.dotSeparator}>•</Text>
+        <Text style={styles.infoText}>{deliveryTime}</Text>
+        <Text style={styles.dotSeparator}>•</Text>
+        <Text style={styles.infoText}>₹400 for two</Text>
+      </View>
+      <View style={styles.offerBadge}>
+        <Text style={styles.offerText}>🎟️ {discount} applied at checkout</Text>
+      </View>
+    </View>
+  );
 
   const renderItem = ({ item }: { item: FoodItem }) => (
     <View style={styles.itemContainer}>
@@ -143,7 +196,11 @@ const HotelDetailsScreen = () => {
 
       <FlatList
         data={menuItems}
+        ListHeaderComponent={RestaurantHeader}
         renderItem={renderItem}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        onScrollEndDrag={handleScrollEnd}
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -153,7 +210,7 @@ const HotelDetailsScreen = () => {
       {cart.total > 0 && (
         <TouchableOpacity
           style={styles.floatingCart}
-          onPress={() => navigation.navigate('Cart', { hotelId })}
+          onPress={() => navigation.navigate('Cart', { hotelId, discount, deliveryTime, hotelName })}
         >
           <View>
             <Text style={styles.cartItemsCount}>{cart.items.length} ITEM{cart.total > 1 ? 'S' : ''}</Text>
@@ -309,6 +366,57 @@ const styles = StyleSheet.create({
   viewCartArrow: {
     color: '#fff',
     fontSize: 12,
+  },
+  restaurantHeaderContainer: {
+    padding: 16,
+    borderBottomWidth: 8,
+    borderBottomColor: '#F2F2F7', // Thick separator common in food apps
+    backgroundColor: '#fff',
+  },
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1C1C1C',
+    marginBottom: 8,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  ratingBox: {
+    backgroundColor: '#267E3E',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  ratingValue: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  infoText: {
+    color: '#696969',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  dotSeparator: {
+    marginHorizontal: 8,
+    color: '#9C9C9C',
+    fontWeight: 'bold',
+  },
+  offerBadge: {
+    backgroundColor: '#F0F5FF',
+    padding: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D0E0FF',
+    borderStyle: 'dashed',
+  },
+  offerText: {
+    color: '#256FEF',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 

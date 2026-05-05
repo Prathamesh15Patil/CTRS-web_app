@@ -5,9 +5,9 @@ import {
   FlatList, 
   TouchableOpacity, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
@@ -21,14 +21,14 @@ type CartScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Cart'>;
 const CartScreen = () => {
   const route = useRoute<CartScreenRouteProp>();
   const navigation = useNavigation<CartScreenNavigationProp>();
-  const { hotelId } = route.params || { hotelId: '1' }; // Fallback for safety
+  const { hotelId, discount, deliveryTime, hotelName } = route.params || { hotelId: '1', discount: 'Free delivery', deliveryTime: '35 mins', hotelName: 'Veg Hotel' }; // Fallback for safety
   const { cart, updateQuantity } = useCart();
   const { logAction } = useLogger();
 
   useEffect(() => {
     logAction('opened cart');
     if (cart.items.length > 0) {
-      logAction('Offer section displayed in cart:\n                     - SAVE125 applicable above ₹249');
+      logAction(`Offer section displayed in cart:\n                     - ${discount}`);
     }
   }, []);
 
@@ -82,7 +82,7 @@ const CartScreen = () => {
         <Text style={styles.emptyText}>Your cart is empty!</Text>
         <TouchableOpacity 
           style={styles.browseBtn} 
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.replace('Home')}
         >
           <Text style={styles.browseBtnText}>Browse Restaurants</Text>
         </TouchableOpacity>
@@ -150,7 +150,7 @@ const CartScreen = () => {
           style={styles.checkoutButton}
           onPress={() => {
             logAction('tapped "Proceed to Checkout"');
-            navigation.navigate('Billing', { hotelId });
+            navigation.navigate('Billing', { hotelId, deliveryTime, hotelName });
           }}
         >
           <Text style={styles.checkoutButtonText}>Proceed to Pay</Text>

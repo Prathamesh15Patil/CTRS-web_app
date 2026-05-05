@@ -5,6 +5,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
 import { useLogger } from '../../context/LogContext';
+import { Keyboard } from 'react-native';
 
 type RatingScreenRouteProp = RouteProp<MainStackParamList, 'Rating'>;
 type RatingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Rating'>;
@@ -12,7 +13,7 @@ type RatingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Ratin
 const RatingScreen = () => {
   const route = useRoute<RatingScreenRouteProp>();
   const navigation = useNavigation<RatingScreenNavigationProp>();
-  const { hotelId } = route.params;
+  const { hotelId, hotelName } = route.params;
   const { logAction } = useLogger();
   
   const [rating, setRating] = useState(0);
@@ -29,21 +30,23 @@ const RatingScreen = () => {
       return;
     }
     
-    logAction(`submitted rating: ${rating} stars for hotel ${hotelId} with message: "${message}"`);
+    logAction(`submitted rating: ${rating} stars for hotel ${hotelName} with message: "${message}"`);
     
     Alert.alert('Thank You!', 'Your feedback helps us improve.', [
       {
         text: 'Back to Home',
-        onPress: () => navigation.navigate('Home'),
+        onPress: () => navigation.replace('Home'),
       },
     ]);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    
+    <SafeAreaView style={styles.container} >
+      <TouchableOpacity onPress={()=>Keyboard.dismiss()}>
       <View style={styles.card}>
         <Text style={styles.title}>How was your food?</Text>
-        <Text style={styles.subtitle}>Rate your experience with Hotel {hotelId}</Text>
+        <Text style={styles.subtitle}>Rate your experience with Hotel {hotelName}</Text>
         
         <View style={styles.starsContainer}>
           {[1, 2, 3, 4, 5].map((star) => (
@@ -72,6 +75,8 @@ const RatingScreen = () => {
           <Text style={styles.submitButtonText}>Submit Feedback</Text>
         </TouchableOpacity>
       </View>
+      
+    </TouchableOpacity>
     </SafeAreaView>
   );
 };

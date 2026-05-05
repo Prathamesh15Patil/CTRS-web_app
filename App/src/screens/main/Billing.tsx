@@ -21,7 +21,7 @@ type BillingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Bill
 const BillingScreen = () => {
   const route = useRoute<BillingScreenRouteProp>();
   const navigation = useNavigation<BillingScreenNavigationProp>();
-  const { hotelId } = route.params || { hotelId: '1' };
+  const { hotelId, hotelName} = route.params || { hotelId: '1' };
   const { cart, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('UPI');
   const { logAction } = useLogger();
@@ -49,7 +49,7 @@ const BillingScreen = () => {
         text: 'Rate your Experience',
         onPress: () => {
           clearCart();
-          navigation.navigate('Rating', { hotelId });
+          navigation.navigate('Rating', { hotelId, hotelName });
         },
       },
     ]);
