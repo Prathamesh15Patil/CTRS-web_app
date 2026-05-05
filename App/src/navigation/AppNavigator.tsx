@@ -27,8 +27,8 @@ const AuthNavigator = () => (
 );
 
 const MainNavigator = () => (
-  <MainStack.Navigator screenOptions={{ headerShown: true }}>
-    <MainStack.Screen name="Home" component={HomeScreen} />
+  <MainStack.Navigator screenOptions={{ headerShown: false }}>
+    <MainStack.Screen name="Home" component={HomeScreen} options={{headerShown:false}}/>
     <MainStack.Screen name="HotelDetails" component={HotelDetailsScreen} />
     <MainStack.Screen name="Cart" component={CartScreen} />
     <MainStack.Screen name="Billing" component={BillingScreen} />

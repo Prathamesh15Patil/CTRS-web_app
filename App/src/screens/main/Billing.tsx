@@ -1,7 +1,13 @@
-// src/screens/main/Billing.tsx
-
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert,  
+  ScrollView 
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/types';
@@ -9,20 +15,20 @@ import { useCart } from '../../context/CartContext';
 
 type BillingScreenNavigationProp = StackNavigationProp<MainStackParamList, 'Billing'>;
 
-const DELIVERY_CHARGE = 2.99;
-
 const BillingScreen = () => {
   const navigation = useNavigation<BillingScreenNavigationProp>();
   const { cart, clearCart } = useCart();
+  const [paymentMethod, setPaymentMethod] = useState('UPI');
 
   const itemTotal = cart.total;
-  const deliveryCharge = DELIVERY_CHARGE;
-  const grandTotal = itemTotal + deliveryCharge;
+  const deliveryCharge = 40;
+  const platformFee = 5;
+  const grandTotal = itemTotal + deliveryCharge + platformFee;
 
   const handlePlaceOrder = () => {
-    Alert.alert('Order Placed', 'Your order has been placed successfully!', [
+    Alert.alert('Order Placed!', 'Your delicious meal is on the way.', [
       {
-        text: 'OK',
+        text: 'Track Order',
         onPress: () => {
           clearCart();
           navigation.navigate('Home');
@@ -32,79 +38,225 @@ const BillingScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Billing</Text>
-      <View style={styles.breakdown}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Item Total:</Text>
-          <Text style={styles.value}>${itemTotal.toFixed(2)}</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Delivery Address Section */}
+        <View style={styles.sectionCard}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Delivery at Home</Text>
+            <TouchableOpacity><Text style={styles.changeText}>CHANGE</Text></TouchableOpacity>
+          </View>
+          <Text style={styles.addressText}>
+            Flat 402, Sunshine Apartments, Sector 45, Gurgaon, Haryana - 122003
+          </Text>
+          <Text style={styles.deliveryTimeText}>⏱ 25-30 mins</Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Delivery Charge:</Text>
-          <Text style={styles.value}>${deliveryCharge.toFixed(2)}</Text>
+
+        {/* Payment Methods */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>Payment Method</Text>
+          
+          <TouchableOpacity 
+            style={[styles.paymentOption, paymentMethod === 'UPI' && styles.selectedOption]} 
+            onPress={() => setPaymentMethod('UPI')}
+          >
+            <View style={styles.paymentInfo}>
+              <Text style={styles.paymentIcon}>📱</Text>
+              <Text style={styles.paymentLabel}>Google Pay / PhonePe</Text>
+            </View>
+            <View style={[styles.radio, paymentMethod === 'UPI' && styles.radioSelected]} />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.paymentOption, paymentMethod === 'COD' && styles.selectedOption]} 
+            onPress={() => setPaymentMethod('COD')}
+          >
+            <View style={styles.paymentInfo}>
+              <Text style={styles.paymentIcon}>💵</Text>
+              <Text style={styles.paymentLabel}>Cash on Delivery</Text>
+            </View>
+            <View style={[styles.radio, paymentMethod === 'COD' && styles.radioSelected]} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.separator} />
-        <View style={styles.row}>
-          <Text style={styles.grandTotalLabel}>Grand Total:</Text>
-          <Text style={styles.grandTotalValue}>${grandTotal.toFixed(2)}</Text>
+
+        {/* Summary Breakdown */}
+        <View style={styles.sectionCard}>
+            <Text style={styles.sectionTitle}>Summary</Text>
+            <View style={styles.row}>
+                <Text style={styles.label}>Item Total</Text>
+                <Text style={styles.value}>₹{itemTotal.toFixed(2)}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label}>Delivery Charge</Text>
+                <Text style={styles.value}>₹{deliveryCharge}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label}>Platform Fee</Text>
+                <Text style={styles.value}>₹{platformFee}</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.row}>
+                <Text style={styles.grandTotalLabel}>Amount to Pay</Text>
+                <Text style={styles.grandTotalValue}>₹{grandTotal.toFixed(2)}</Text>
+            </View>
         </View>
+      </ScrollView>
+
+      {/* Secure Checkout Button */}
+      <View style={styles.footer}>
+        <View>
+            <Text style={styles.footerPrice}>₹{grandTotal.toFixed(2)}</Text>
+            <Text style={styles.footerSecure}>TOTAL SECURE PAYMENT</Text>
+        </View>
+        <TouchableOpacity style={styles.placeOrderButton} onPress={handlePlaceOrder}>
+          <Text style={styles.placeOrderButtonText}>Place Order</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.placeOrderButton} onPress={handlePlaceOrder}>
-        <Text style={styles.placeOrderButtonText}>Place Order</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#F4F6F8',
+  },
+  scrollContent: {
+    paddingBottom: 120,
+  },
+  sectionCard: {
     backgroundColor: '#fff',
+    marginTop: 10,
+    padding: 16,
   },
-  title: {
-    fontSize: 24,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#1C1C1C',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 10,
+  },
+  changeText: {
+    color: '#E23744',
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: 12,
   },
-  breakdown: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
+  addressText: {
+    fontSize: 14,
+    color: '#505050',
+    lineHeight: 20,
+  },
+  deliveryTimeText: {
+    fontSize: 13,
+    color: '#267E3E',
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  paymentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F9F9F9',
+  },
+  selectedOption: {
+    backgroundColor: '#FFF1F2',
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
+  },
+  paymentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  paymentIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  paymentLabel: {
+    fontSize: 15,
+    color: '#2D2D2D',
+    fontWeight: '500',
+  },
+  radio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#CCC',
+  },
+  radioSelected: {
+    borderColor: '#E23744',
+    backgroundColor: '#E23744',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginVertical: 4,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#606060',
   },
   value: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#1C1C1C',
+    fontWeight: '500',
   },
-  separator: {
+  divider: {
     height: 1,
-    backgroundColor: '#ccc',
-    marginVertical: 10,
+    backgroundColor: '#EEE',
+    marginVertical: 12,
   },
   grandTotalLabel: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#1C1C1C',
   },
   grandTotalValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#ff7e8b',
+    color: '#1C1C1C',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E8E8E8',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  footerPrice: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1C1C1C',
+  },
+  footerSecure: {
+    fontSize: 9,
+    color: '#888',
+    letterSpacing: 1,
   },
   placeOrderButton: {
-    backgroundColor: '#ff7e8b',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
+    backgroundColor: '#E23744',
+    paddingHorizontal: 35,
+    paddingVertical: 14,
+    borderRadius: 8,
   },
   placeOrderButtonText: {
     color: '#fff',
