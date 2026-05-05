@@ -92,7 +92,9 @@ const HotelDetailsScreen = () => {
   useEffect(() => {
     logAction('Restaurant page opened');
     logAction('Restaurant details displayed:\n                     - Rating: 4.3\n                     - Delivery Time: 30–35 mins\n                     - Cost for two: ₹400');
-    logAction('Menu categories displayed (Recommended, Biryani, Starters, Beverages)');
+    
+    const topDishes = (ALL_MENUS[hotelId] || []).slice(0, 3).map(item => item.name).join(', ');
+    logAction(`Menu items displayed (${topDishes})`);
   }, []);
 
   // Filter menu based on hotelId
