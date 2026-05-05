@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '../navigation/types';
+import { loginUser, decodeJWT } from '../services/apiService';
 
 interface AuthContextType {
   user: User | null;
@@ -30,16 +31,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    // Mock login - in real app, call API
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
-    if (email === 'test@example.com' && password === 'password') {
-      const mockUser: User = { id: '1', email, name: 'Test User' };
-      setUser(mockUser);
+    try {
+      const response = await loginUser({ email, password });
+
+      if (response.access_token) {
+        const decoded = decodeJWT(response.access_token);
+        console.log('Decoded token:', decoded);
+        
+        if (decoded) {
+          const username = decoded.username || decoded.name || decoded.sub || email;
+          console.log('Extracted username:', username);
+          const loggedInUser: User = {
+            id: decoded.user_id || decoded.sub || email,
+            email: decoded.email || email,
+            name: username,
+          };
+          setUser(loggedInUser);
+          setIsLoading(false);
+          return true;
+        }
+      }
+
       setIsLoading(false);
-      return true;
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      setIsLoading(false);
+      return false;
     }
-    setIsLoading(false);
-    return false;
   };
 
   const logout = async () => {
