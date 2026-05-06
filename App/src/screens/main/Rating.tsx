@@ -42,8 +42,18 @@ const RatingScreen = () => {
   };
 
   return (
-    
     <SafeAreaView style={styles.container} >
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => {
+            logAction('came back from Rating page');
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.backButton}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Rating</Text>
+      </View>
       <TouchableOpacity onPress={()=>Keyboard.dismiss()}>
       <View style={styles.card}>
         <Text style={styles.title}>How was your food?</Text>
@@ -88,6 +98,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     justifyContent: 'center',
     padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F8F8F8',
+  },
+  backButton: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1C1C1C',
   },
   card: {
     backgroundColor: '#fff',

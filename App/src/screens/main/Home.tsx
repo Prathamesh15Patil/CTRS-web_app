@@ -82,7 +82,7 @@ const HomeScreen = () => {
         {
           text: 'Quit',
           onPress: () => {
-            logAction('exited the application');
+            logAction('log <END>');
             setTimeout(() => BackHandler.exitApp(), 100);
           },
         },
@@ -148,9 +148,32 @@ const HomeScreen = () => {
               </Text>
             </View>
           </View>
+        <View style={styles.rightIcons}>
           <TouchableOpacity style={styles.profileCircle}>
             <Text style={styles.profileInitial}>G</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.exitIcon}
+            onPress={() => {
+              Alert.alert('Want to Exit app?', 'Are you sure you want to exit?', [
+                {
+                  text: 'Cancel',
+                  onPress: () => null,
+                  style: 'cancel',
+                },
+                {
+                  text: 'Quit',
+                  onPress: () => {
+                    logAction('log <END>');
+                    setTimeout(() => BackHandler.exitApp(), 100);
+                  },
+                },
+              ]);
+            }}
+          >
+            <Text style={styles.exitText}>⍈</Text>
+          </TouchableOpacity>
+        </View>
         </View>
 
         <View style={styles.searchWrapper}>
@@ -367,7 +390,19 @@ const styles = StyleSheet.create({
     marginTop: 50,
     color: '#696969',
     fontSize: 16,
-  }
+  },
+  rightIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  exitIcon: {
+    marginLeft: 10,
+    padding: 8,
+    borderRadius: 17.5,
+  },
+  exitText: {
+    fontSize: 26,
+  },
 });
 
 export default HomeScreen;
