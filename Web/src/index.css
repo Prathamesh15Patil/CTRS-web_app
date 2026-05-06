@@ -1,1 +1,108 @@
 @import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   CTRS — Cyber-Industrial Minimalist Palette
+   Background : #020617 (Deep Midnight)
+   Accent     : #22d3ee (Electric Cyan)
+   Text       : #94a3b8 (Slate Gray)
+   ────────────────────────────────────────────── */
+
+@theme {
+  --color-midnight: #020617;
+  --color-cyan: #22d3ee;
+  --color-slate: #94a3b8;
+  --color-border-thin: rgba(34, 211, 238, 0.2);
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Base ─────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--color-midnight);
+  color: var(--color-slate);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan);
+}
+
+/* ── Custom animations ────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+.glass {
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.border-thin {
+  border: 0.5px solid var(--color-border-thin);
+}
+
+/* ── Markdown prose ───────────────────────────── */
+.prose-terminal {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.prose-terminal p {
+  margin-bottom: 0.25rem;
+}
+
+.prose-synthesis h1, .prose-synthesis h2, .prose-synthesis h3 {
+  color: var(--color-cyan);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.prose-synthesis h1 { font-size: 1.5rem; }
+.prose-synthesis h2 { font-size: 1.25rem; }
+.prose-synthesis h3 { font-size: 1.1rem; }
+
+.prose-synthesis p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.prose-synthesis strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.cyan-bullet {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-cyan);
+  margin-right: 12px;
+}
