@@ -1,4 +1,4 @@
-const BASE_URL = 'https://rahul-samedavar-tomato-be.hf.space';
+const BASE_URL = 'https://DevBytes-OG-zomato-backend.hf.space';
 
 export interface LoginPayload {
   email: string;

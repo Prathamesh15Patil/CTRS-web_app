@@ -41,8 +41,6 @@ const BillingScreen = () => {
   const handlePlaceOrder = () => {
     logAction(`Payment successful via ${paymentMethod}`);
     logAction('Order placed successfully');
-    logAction(`Order ID generated: ZMT${Math.floor(Math.random() * 100000000)}`);
-    logAction('Order status: Preparing food');
 
     Alert.alert('Order Placed!', 'Your delicious meal is on the way.', [
       {

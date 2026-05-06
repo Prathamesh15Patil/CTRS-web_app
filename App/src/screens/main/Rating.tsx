@@ -31,6 +31,7 @@ const RatingScreen = () => {
     }
     
     logAction(`submitted rating: ${rating} stars for hotel ${hotelName} with message: "${message}"`);
+    logAction('log <END>');
     
     Alert.alert('Thank You!', 'Your feedback helps us improve.', [
       {
