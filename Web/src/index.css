@@ -1,108 +1,146 @@
+/* index.css */
 @import "tailwindcss";
 
 /* ──────────────────────────────────────────────
-   CTRS — Cyber-Industrial Minimalist Palette
-   Background : #020617 (Deep Midnight)
-   Accent     : #22d3ee (Electric Cyan)
-   Text       : #94a3b8 (Slate Gray)
+   CTRS — Refined Cyber Minimal UI
    ────────────────────────────────────────────── */
 
 @theme {
   --color-midnight: #020617;
   --color-cyan: #22d3ee;
   --color-slate: #94a3b8;
-  --color-border-thin: rgba(34, 211, 238, 0.2);
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* ── Base ─────────────────────────────────────── */
+/* ── Base ───────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body, #root {
-  height: 100%;
-  background: var(--color-midnight);
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #020617;
   color: var(--color-slate);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scrollbar ────────────────────────────────── */
+/* ── Scrollbar ──────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(34, 211, 238, 0.1);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
 }
 
-/* ── Custom animations ────────────────────────── */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
+}
+
+/* ── Surface System ─────────────────────────── */
+.surface {
+  background: rgba(10, 16, 30, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ── Animations ─────────────────────────────── */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0; }
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {
   animation: blink 1s step-end infinite;
 }
 
-.glass {
-  background: rgba(2, 6, 23, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* ── Typography ─────────────────────────────── */
+.prose-synthesis {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #d6deeb;
 }
 
-.border-thin {
-  border: 0.5px solid var(--color-border-thin);
-}
-
-/* ── Markdown prose ───────────────────────────── */
-.prose-terminal {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-
-.prose-terminal p {
-  margin-bottom: 0.25rem;
-}
-
-.prose-synthesis h1, .prose-synthesis h2, .prose-synthesis h3 {
-  color: var(--color-cyan);
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+.prose-synthesis h1,
+.prose-synthesis h2,
+.prose-synthesis h3 {
+  color: #ffffff;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
-.prose-synthesis h1 { font-size: 1.5rem; }
-.prose-synthesis h2 { font-size: 1.25rem; }
-.prose-synthesis h3 { font-size: 1.1rem; }
+.prose-synthesis h1 {
+  font-size: 2rem;
+}
+
+.prose-synthesis h2 {
+  font-size: 1.5rem;
+}
+
+.prose-synthesis h3 {
+  font-size: 1.2rem;
+}
 
 .prose-synthesis p {
-  margin-bottom: 1rem;
-  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  color: #b8c4d9;
 }
 
 .prose-synthesis strong {
-  color: #fff;
+  color: white;
   font-weight: 600;
 }
 
+.prose-synthesis ul {
+  margin: 1rem 0;
+  padding-left: 1rem;
+}
+
+.prose-synthesis li {
+  margin-bottom: 0.9rem;
+}
+
+.prose-terminal {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #8ea3c7;
+}
+
+/* ── Utility ────────────────────────────────── */
 .cyan-bullet {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: var(--color-cyan);
-  margin-right: 12px;
+  border-radius: 999px;
+  margin-right: 14px;
+  margin-top: 11px;
+  flex-shrink: 0;
 }
