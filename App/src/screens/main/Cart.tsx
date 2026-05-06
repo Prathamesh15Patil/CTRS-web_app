@@ -78,20 +78,44 @@ const CartScreen = () => {
 
   if (cart.items.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Your cart is empty!</Text>
-        <TouchableOpacity 
-          style={styles.browseBtn} 
-          onPress={() => navigation.replace('Home')}
-        >
-          <Text style={styles.browseBtnText}>Browse Restaurants</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => {
+              logAction('came back from Cart page');
+              navigation.goBack();
+            }}
+          >
+            <Text style={styles.backButton}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Cart</Text>
+        </View>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Your cart is empty!</Text>
+          <TouchableOpacity 
+            style={styles.browseBtn} 
+            onPress={() => navigation.replace('Home')}
+          >
+            <Text style={styles.browseBtnText}>Browse Restaurants</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => {
+            logAction('came back from Cart page');
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.backButton}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Cart</Text>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Item List Section */}
         <View style={styles.sectionCard}>
@@ -164,6 +188,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F2F4F7',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F4F7',
+  },
+  backButton: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1C1C1C',
   },
   sectionCard: {
     backgroundColor: '#fff',

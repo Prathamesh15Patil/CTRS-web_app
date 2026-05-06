@@ -55,6 +55,17 @@ const BillingScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => {
+            logAction('came back from Billing page');
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.backButton}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Billing</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Delivery Address Section */}
         <View style={styles.sectionCard}>
@@ -142,6 +153,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F4F6F8',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F4F6F8',
+  },
+  backButton: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1C1C1C',
   },
   scrollContent: {
     paddingBottom: 120,

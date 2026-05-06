@@ -19,7 +19,7 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     const success = await login(email, password);
     if (success) {
-      logAction('logged in using Phone Number OTP authentication');
+      logAction('logged in using email and password');
     } else {
       Alert.alert('Error', 'Invalid credentials');
     }
